@@ -131,3 +131,9 @@ export type LearningState = {
   suggestedAutonomy?: AutonomyLevel;
   applied: boolean;
 };
+
+export type PublisherProfile = {
+  onboarded: boolean;
+  monthlyBudgetGbp: number;
+  autonomy: AutonomyLevel;
+};

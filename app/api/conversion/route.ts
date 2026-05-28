@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import { cleanSignals, scoreConversionTrust, suspiciousSignals } from "@/lib/audit";
+import { parsePriceGbp } from "@/lib/tavily";
 import {
   addRailItem,
+  conversionForClick,
   findRailItemByClickId,
   getSessionId,
+  placementByClickId,
   recordClick,
   recordConversion,
   updateRailItem,
@@ -34,12 +37,27 @@ export async function POST(req: Request) {
   if (!clickId) {
     return NextResponse.json({ error: "clickId required" }, { status: 400 });
   }
-  const placement = recordClick(clickId);
-  if (!placement) {
-    return NextResponse.json({ error: "unknown clickId" }, { status: 404 });
+  if (conversionForClick(clickId)) {
+    return NextResponse.json({ error: "already converted" }, { status: 409 });
   }
 
-  const value = body.value ?? Math.round((20 + Math.random() * 40) * 100) / 100;
+  const existing = placementByClickId(clickId);
+  if (!existing) {
+    return NextResponse.json({ error: "unknown clickId" }, { status: 404 });
+  }
+  if (!existing.clickedAt) {
+    return NextResponse.json(
+      { error: "click required before conversion" },
+      { status: 400 },
+    );
+  }
+  const placement = existing;
+
+  const parsedPrice = parsePriceGbp(placement.offer.price);
+  const value =
+    body.value ??
+    parsedPrice ??
+    Math.round((24 + Math.random() * 16) * 100) / 100;
   const signals =
     body.mode === "suspicious" ? suspiciousSignals() : cleanSignals();
   const audit = scoreConversionTrust(signals, placement, value);

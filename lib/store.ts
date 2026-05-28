@@ -4,12 +4,14 @@ import type {
   Conversion,
   LearningState,
   Placement,
+  PublisherProfile,
   RailItem,
 } from "./types";
 
 type Store = {
   sessionId: string;
   autonomy: AutonomyLevel;
+  profile: PublisherProfile;
   placements: Map<string, Placement>;
   placementsByClickId: Map<string, Placement>;
   conversions: Map<string, Conversion>;
@@ -31,6 +33,7 @@ function init(): Store {
   return {
     sessionId: makeSessionId(),
     autonomy: "balanced",
+    profile: { onboarded: false, monthlyBudgetGbp: 500, autonomy: "balanced" },
     placements: new Map(),
     placementsByClickId: new Map(),
     conversions: new Map(),
@@ -55,6 +58,20 @@ export function getLearning(): LearningState | null {
 
 export function setLearning(l: LearningState): void {
   getStore().learning = l;
+}
+
+export function getProfile(): PublisherProfile {
+  return { ...getStore().profile };
+}
+
+export function setProfile(profile: PublisherProfile): void {
+  const s = getStore();
+  s.profile = profile;
+  s.autonomy = profile.autonomy;
+}
+
+export function conversionForClick(clickId: string): Conversion | undefined {
+  return [...getStore().conversions.values()].find((c) => c.clickId === clickId);
 }
 
 export function getStore(): Store {

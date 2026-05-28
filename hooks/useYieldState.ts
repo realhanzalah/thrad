@@ -7,6 +7,7 @@ import type {
   BusinessMetrics,
   Conversion,
   LearningState,
+  PublisherProfile,
   RailItem,
 } from "@/lib/types";
 import { thradConversion, thradEvent } from "@/lib/thrad";
@@ -21,6 +22,7 @@ export function useYieldState() {
   const [autonomy, setAutonomy] = useState<AutonomyLevel>("balanced");
   const [threshold, setThreshold] = useState(65);
   const [earnings, setEarnings] = useState<Earnings>({ totalGbp: 0, pendingGbp: 0 });
+  const [profile, setProfile] = useState<PublisherProfile | null>(null);
   const [pulse, setPulse] = useState(false);
   const prevTotal = useRef(0);
 
@@ -36,6 +38,7 @@ export function useYieldState() {
       setAutonomy(data.autonomy);
       setThreshold(data.intentThreshold ?? 65);
       setEarnings(data.earnings);
+      setProfile(data.profile ?? null);
     } catch {
       /* swallow */
     }
@@ -128,6 +131,7 @@ export function useYieldState() {
     autonomy,
     threshold,
     earnings,
+    profile,
     pulse,
     refresh,
     setStrictness,

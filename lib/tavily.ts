@@ -18,14 +18,41 @@ function extractPrice(text: string | undefined): string | undefined {
   return m?.[0]?.replace(/\s/g, "");
 }
 
+export function parsePriceGbp(price?: string): number | undefined {
+  if (!price) return undefined;
+  const m = price.match(/[\d,.]+/);
+  if (!m) return undefined;
+  const n = parseFloat(m[0].replace(",", ""));
+  return Number.isFinite(n) ? n : undefined;
+}
+
 function extractMerchant(url: string | undefined): string | undefined {
   if (!url) return undefined;
   try {
-    const host = new URL(url).hostname.replace(/^www\./, "");
-    return host;
+    return new URL(url).hostname.replace(/^www\./, "");
   } catch {
     return undefined;
   }
+}
+
+function isValidProductUrl(url: string): boolean {
+  try {
+    const u = new URL(url);
+    return u.protocol === "http:" || u.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function scoreResult(r: TavilyResult): number {
+  if (!r.title || !r.url || !isValidProductUrl(r.url)) return -1;
+  let score = 0;
+  const hay = `${r.title} ${r.content ?? ""} ${r.url}`.toLowerCase();
+  if (/amazon|argos|john lewis|currys|lakeland|etsy|ebay|shop|buy|product/.test(hay))
+    score += 3;
+  if (extractPrice(r.content)) score += 2;
+  if (!/wikipedia|reddit|youtube|quora|forum/.test(r.url)) score += 1;
+  return score;
 }
 
 export async function findOffer(query: string, category: Category): Promise<Offer> {
@@ -41,9 +68,9 @@ export async function findOffer(query: string, category: Category): Promise<Offe
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      query,
-      max_results: 5,
-      search_depth: "basic",
+      query: `${query} buy UK price`,
+      max_results: 8,
+      search_depth: "advanced",
       include_answer: false,
     }),
   });
@@ -52,15 +79,20 @@ export async function findOffer(query: string, category: Category): Promise<Offe
     throw new Error(`Tavily ${res.status}: ${body.slice(0, 200)}`);
   }
   const data: TavilyResponse = await res.json();
-  const first = data.results?.find((r) => r.title && r.url);
-  if (!first?.title || !first.url) {
-    throw new Error("Tavily returned no usable results");
+  const ranked = (data.results ?? [])
+    .map((r) => ({ r, score: scoreResult(r) }))
+    .filter((x) => x.score >= 0)
+    .sort((a, b) => b.score - a.score);
+
+  const best = ranked[0]?.r;
+  if (!best?.title || !best.url) {
+    throw new Error("Tavily returned no usable product links");
   }
   return {
-    title: first.title,
-    url: first.url,
-    price: extractPrice(first.content),
-    merchant: extractMerchant(first.url),
-    snippet: first.content?.slice(0, 220),
+    title: best.title,
+    url: best.url,
+    price: extractPrice(best.content),
+    merchant: extractMerchant(best.url),
+    snippet: best.content?.slice(0, 220),
   };
 }

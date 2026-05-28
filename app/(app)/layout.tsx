@@ -1,5 +1,10 @@
 import { AppShell } from "@/components/AppShell";
+import { OnboardingGate } from "@/components/Onboarding";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  return <AppShell>{children}</AppShell>;
+  return (
+    <OnboardingGate>
+      <AppShell>{children}</AppShell>
+    </OnboardingGate>
+  );
 }

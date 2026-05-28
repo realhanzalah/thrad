@@ -108,11 +108,11 @@ export default function DemoChat() {
             {m.placement && (
               <div className="mt-3 pt-3 border-t border-zinc-800">
                 <Link
-                  href={`/demo/order?clickId=${encodeURIComponent(m.placement.clickId)}`}
-                  className="text-sm text-emerald-400 hover:text-emerald-300"
+                  href={`/demo/checkout?clickId=${encodeURIComponent(m.placement.clickId)}`}
+                  className="text-sm text-emerald-400 hover:text-emerald-300 underline underline-offset-2"
                 >
-                  Buy {m.placement.offer.title}
-                  {m.placement.offer.price ? ` · ${m.placement.offer.price}` : ""}
+                  View product · {m.placement.offer.title}
+                  {m.placement.offer.price ? ` (${m.placement.offer.price})` : ""}
                 </Link>
               </div>
             )}

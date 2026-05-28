@@ -32,8 +32,12 @@ export function computeMetrics(): BusinessMetrics {
     `[roi] Billed conversions: ${conversionCount} · Revenue: £${revenue.toFixed(2)}`,
   );
 
-  const adSpend =
+  let adSpend =
     impressions * COST_PER_IMPRESSION + clicks * COST_PER_CLICK;
+  const budgetCap = s.profile.monthlyBudgetGbp;
+  if (budgetCap > 0) {
+    adSpend = Math.min(adSpend, budgetCap);
+  }
   appendTrace(
     traceId,
     `[roi] Ad spend = (${impressions} × £${COST_PER_IMPRESSION}) + (${clicks} × £${COST_PER_CLICK}) = £${adSpend.toFixed(2)}`,

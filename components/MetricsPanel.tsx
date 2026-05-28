@@ -6,9 +6,11 @@ import { Card, fmtGbp, fmtPct, fmtRatio } from "./ui";
 export function MetricsPanel({
   metrics,
   learning,
+  budgetGbp,
 }: {
   metrics: BusinessMetrics | null;
   learning: LearningState | null;
+  budgetGbp?: number;
 }) {
   if (!metrics) {
     return (
@@ -34,6 +36,13 @@ export function MetricsPanel({
 
   return (
     <div className="space-y-4">
+      {budgetGbp !== undefined && budgetGbp > 0 && (
+        <p className="text-xs text-zinc-500">
+          Monthly budget cap:{" "}
+          <span className="text-zinc-400 tabular-nums">{fmtGbp(budgetGbp)}</span>
+          {" · "}spend in metrics uses this session&apos;s activity
+        </p>
+      )}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {primary.map((m) => (
           <Card key={m.label} className="p-4 hover:-translate-y-0.5 transition-transform">

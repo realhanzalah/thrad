@@ -25,6 +25,7 @@ export default function Dashboard() {
     monetizeDecision,
     saleDecision,
     simulateFlaggedSale,
+    profile,
   } = useYieldState();
 
   const pendingMonetize = rail.filter((r) => r.kind === "hold" && r.pendingApproval);
@@ -48,7 +49,7 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col flex-1 min-h-screen">
-      <header className="px-6 py-5 border-b-2 border-zinc-800">
+      <header className="px-6 py-5 border-b-2 border-zinc-700">
         <h1 className="text-xl font-semibold tracking-tight text-zinc-100">Dashboard</h1>
         <div className="mt-3 flex gap-8">
           <div>
@@ -73,7 +74,11 @@ export default function Dashboard() {
       </header>
 
       <div className="flex-1 overflow-y-auto px-6 py-6 space-y-8 max-w-5xl">
-        <MetricsPanel metrics={metrics} learning={learning} />
+        <MetricsPanel
+          metrics={metrics}
+          learning={learning}
+          budgetGbp={profile?.monthlyBudgetGbp}
+        />
 
         {(pendingMonetize.length > 0 || uniquePendingSales.length > 0) && (
           <section>
@@ -160,10 +165,10 @@ export default function Dashboard() {
                 key={s.level}
                 type="button"
                 onClick={() => setStrictness(s.level)}
-                className={`flex-1 py-2.5 rounded-md border-2 text-sm transition duration-200 shadow-[3px_3px_0px_0px_rgba(0,0,0,0.45)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none ${
+                className={`flex-1 py-2.5 rounded-none border-2 text-sm font-semibold uppercase tracking-wide transition duration-200 ease-out shadow-[4px_4px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none ${
                   autonomy === s.level
-                    ? "border-emerald-600 bg-emerald-950/50 text-emerald-200"
-                    : "border-zinc-700 bg-zinc-900 text-zinc-400 hover:border-zinc-600"
+                    ? "border-emerald-700 bg-emerald-950/50 text-emerald-200"
+                    : "border-zinc-600 bg-zinc-900 text-zinc-400 hover:border-zinc-500"
                 }`}
               >
                 <div className="font-medium">{s.label}</div>

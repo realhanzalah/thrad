@@ -25,3 +25,14 @@ body {
 ::selection {
   background: rgba(16, 185, 129, 0.35);
 }
+
+/* Bauhaus-style hard shadows (dark theme) */
+.shadow-hard-sm {
+  box-shadow: 3px 3px 0 0 #000000;
+}
+.shadow-hard-md {
+  box-shadow: 4px 4px 0 0 #000000;
+}
+.shadow-hard-lg {
+  box-shadow: 8px 8px 0 0 #000000;
+}
