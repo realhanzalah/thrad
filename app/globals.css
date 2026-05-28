@@ -3,6 +3,9 @@
 :root {
   --background: #09090b;
   --foreground: #fafafa;
+  --shadow-hard-sm: 3px 3px 0 0 rgba(0, 0, 0, 0.5);
+  --shadow-hard-md: 4px 4px 0 0 rgba(0, 0, 0, 0.55);
+  --shadow-hard-lg: 6px 6px 0 0 rgba(0, 0, 0, 0.5);
 }
 
 @theme inline {
@@ -17,4 +20,8 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+::selection {
+  background: rgba(16, 185, 129, 0.35);
 }

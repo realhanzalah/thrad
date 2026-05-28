@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { appendTrace, finishTrace, startTrace } from "./agent-trace";
 import type { AgentDecision, AutonomyLevel } from "./types";
 import { thresholdFor } from "./store";
 import { traceLLMCall } from "./trace";
@@ -83,10 +84,20 @@ export async function scoreAndDecide(
   message: string,
   autonomy: AutonomyLevel,
 ): Promise<AgentDecision> {
+  const threshold = thresholdFor(autonomy);
+  const traceId = startTrace("intent", [
+    "[intent] New message received",
+    `[intent] Autonomy: ${autonomy} (intent bar ${threshold}+)`,
+    `[intent] Analyzing: "${message.slice(0, 80)}${message.length > 80 ? "…" : ""}"`,
+  ]);
+
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
+    finishTrace(traceId, ["[intent] ERROR: missing API key"], true);
     throw new Error("ANTHROPIC_API_KEY is not set");
   }
+
+  appendTrace(traceId, "[intent] Calling Claude for intent + category…");
   const client = new Anthropic({ apiKey });
   const res = await traceLLMCall("agent.scoreAndDecide", { message, autonomy }, () =>
     client.messages.create({
@@ -102,7 +113,20 @@ export async function scoreAndDecide(
     .join("\n");
   const parsed = safeJsonParse(text);
   if (!parsed) {
+    finishTrace(traceId, ["[intent] ERROR: unparseable model output"], true);
     throw new Error(`agent returned unparseable JSON: ${text.slice(0, 200)}`);
   }
-  return applyAutonomy(parsed, autonomy);
+
+  appendTrace(
+    traceId,
+    `[intent] Model → score ${parsed.intent_score} · category ${parsed.category}`,
+  );
+  const final = applyAutonomy(parsed, autonomy);
+  appendTrace(
+    traceId,
+    `[intent] After policy gate → ${final.decision.toUpperCase()} (${final.reason})`,
+  );
+  finishTrace(traceId, ["[intent] Complete."]);
+
+  return final;
 }

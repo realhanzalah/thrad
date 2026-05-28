@@ -1,5 +1,5 @@
-import YieldConsole from "@/components/YieldConsole";
+import Dashboard from "@/components/Dashboard";
 
-export default function ConsolePage() {
-  return <YieldConsole />;
+export default function HomePage() {
+  return <Dashboard />;
 }

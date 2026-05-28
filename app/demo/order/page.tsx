@@ -5,7 +5,7 @@ export default function OrderPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex flex-1 items-center justify-center text-zinc-500 text-sm">
+        <div className="flex flex-1 items-center justify-center text-zinc-500 text-sm min-h-screen">
           Loading…
         </div>
       }

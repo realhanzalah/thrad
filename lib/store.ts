@@ -1,6 +1,8 @@
 import type {
   AutonomyLevel,
+  BusinessMetrics,
   Conversion,
+  LearningState,
   Placement,
   RailItem,
 } from "./types";
@@ -8,11 +10,13 @@ import type {
 type Store = {
   sessionId: string;
   autonomy: AutonomyLevel;
-  placements: Map<string, Placement>; // by impressionId
+  placements: Map<string, Placement>;
   placementsByClickId: Map<string, Placement>;
   conversions: Map<string, Conversion>;
   rail: RailItem[];
   earnings: { totalGbp: number; pendingGbp: number };
+  metrics: BusinessMetrics | null;
+  learning: LearningState | null;
 };
 
 // Module-level in-memory store (single-process Vercel function instance).
@@ -32,7 +36,25 @@ function init(): Store {
     conversions: new Map(),
     rail: [],
     earnings: { totalGbp: 0, pendingGbp: 0 },
+    metrics: null,
+    learning: null,
   };
+}
+
+export function getMetrics(): BusinessMetrics | null {
+  return getStore().metrics;
+}
+
+export function setMetrics(m: BusinessMetrics): void {
+  getStore().metrics = m;
+}
+
+export function getLearning(): LearningState | null {
+  return getStore().learning;
+}
+
+export function setLearning(l: LearningState): void {
+  getStore().learning = l;
 }
 
 export function getStore(): Store {
@@ -90,6 +112,7 @@ export function recordPlacement(p: Placement): void {
   const s = getStore();
   s.placements.set(p.impressionId, p);
   s.placementsByClickId.set(p.clickId, p);
+  scheduleMetricsRefresh(false);
 }
 
 export function placementByClickId(clickId: string): Placement | undefined {
@@ -128,6 +151,16 @@ export function recordConversion(c: Conversion): void {
   } else if (c.auditStatus === "held_for_review") {
     s.earnings.pendingGbp += c.value;
   }
+  scheduleMetricsRefresh(true);
+}
+
+function scheduleMetricsRefresh(runLearner = false): void {
+  void import("./metrics").then(({ computeMetrics }) => {
+    setMetrics(computeMetrics());
+    if (runLearner) {
+      return import("./learner").then(({ runLearner: learn }) => learn());
+    }
+  });
 }
 
 export function billHeldConversion(conversionId: string): Conversion | undefined {
@@ -138,6 +171,7 @@ export function billHeldConversion(conversionId: string): Conversion | undefined
   c.auditStatus = "human_confirmed";
   s.earnings.pendingGbp = Math.max(0, s.earnings.pendingGbp - c.value);
   s.earnings.totalGbp += c.value;
+  scheduleMetricsRefresh(true);
   return c;
 }
 

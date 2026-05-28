@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server";
+import { getTraces } from "@/lib/agent-trace";
+import { computeMetrics } from "@/lib/metrics";
 import {
   getAutonomy,
   getEarnings,
+  getLearning,
+  getMetrics,
   getRail,
   getSessionId,
   setAutonomy,
+  setMetrics,
   thresholdFor,
 } from "@/lib/store";
 import type { AutonomyLevel } from "@/lib/types";
@@ -14,11 +19,19 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const autonomy = getAutonomy();
+  let metrics = getMetrics();
+  if (!metrics) {
+    metrics = computeMetrics();
+    setMetrics(metrics);
+  }
   return NextResponse.json({
     sessionId: getSessionId(),
     autonomy,
     intentThreshold: thresholdFor(autonomy),
     earnings: getEarnings(),
+    metrics,
+    learning: getLearning(),
+    traces: getTraces(),
     rail: getRail(),
   });
 }

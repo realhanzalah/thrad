@@ -95,3 +95,39 @@ export type ChatResponse = {
   placement?: Placement;
   railItem: RailItem;
 };
+
+export type AgentId = "intent" | "roi" | "learner";
+
+export type AgentTrace = {
+  id: string;
+  agent: AgentId;
+  ts: number;
+  lines: string[];
+  status: "running" | "done" | "error";
+};
+
+export type BusinessMetrics = {
+  revenue: number;
+  pendingRevenue: number;
+  adSpend: number;
+  profit: number;
+  impressions: number;
+  clicks: number;
+  conversions: number;
+  cac: number;
+  ltv: number;
+  roas: number;
+  ltvCacRatio: number;
+  conversionRate: number;
+  clickThroughRate: number;
+  arpu: number;
+  updatedAt: number;
+};
+
+export type LearningState = {
+  lastRunAt: number;
+  summary: string;
+  recommendation: string;
+  suggestedAutonomy?: AutonomyLevel;
+  applied: boolean;
+};
