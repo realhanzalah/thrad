@@ -1,6 +1,19 @@
 import Link from "next/link";
 import { type ReactNode, type SVGProps } from "react";
 
+export const BAUHAUS = {
+  bg: "#F0F0F0",
+  fg: "#121212",
+  red: "#D02020",
+  blue: "#1040C0",
+  yellow: "#F0C020",
+  muted: "#E0E0E0",
+} as const;
+
+export const shadowSm = "shadow-[3px_3px_0px_0px_#121212]";
+export const shadowMd = "shadow-[4px_4px_0px_0px_#121212]";
+export const shadowLg = "shadow-[8px_8px_0px_0px_#121212]";
+
 function IconArrowRight(props: SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden {...props}>
@@ -40,7 +53,7 @@ export function BauhausLogo({ className = "" }: { className?: string }) {
   );
 }
 
-type CornerShape = "circle" | "square" | "triangle";
+export type CornerShape = "circle" | "square" | "triangle";
 
 export function BauhausCard({
   children,
@@ -75,15 +88,18 @@ export function BauhausCard({
 }
 
 const btnBase =
-  "inline-flex items-center justify-center font-bold uppercase tracking-wider text-sm border-2 border-[#121212] shadow-[4px_4px_0px_0px_#121212] transition-all duration-200 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#121212] disabled:opacity-40 disabled:pointer-events-none active:translate-x-[2px] active:translate-y-[2px] active:shadow-none";
+  "inline-flex items-center justify-center font-bold uppercase tracking-wider text-sm border-2 border-[#121212] shadow-[4px_4px_0px_0px_#121212] transition-all duration-200 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#121212] disabled:opacity-40 disabled:pointer-events-none active:translate-x-[2px] active:translate-y-[2px] active:shadow-none min-h-[44px]";
 
-const btnVariants = {
+export const btnVariants = {
   red: "bg-[#D02020] text-white hover:bg-[#D02020]/90",
   blue: "bg-[#1040C0] text-white hover:bg-[#1040C0]/90",
   yellow: "bg-[#F0C020] text-[#121212] hover:bg-[#F0C020]/90",
   outline: "bg-white text-[#121212] hover:bg-[#E0E0E0]",
-  ghost: "border-none shadow-none bg-transparent text-[#121212] hover:bg-[#E0E0E0] active:translate-x-0 active:translate-y-0",
+  ghost:
+    "border-none shadow-none bg-transparent text-[#121212] hover:bg-[#E0E0E0] active:translate-x-0 active:translate-y-0",
 } as const;
+
+export type BtnVariant = keyof typeof btnVariants;
 
 export function BauhausBtn({
   children,
@@ -92,15 +108,16 @@ export function BauhausBtn({
   className = "",
   ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: keyof typeof btnVariants;
+  variant?: BtnVariant;
   shape?: "square" | "pill";
 }) {
   const radius = shape === "pill" ? "rounded-full" : "rounded-none";
+  const { type = "button", ...rest } = props;
   return (
     <button
-      type="button"
-      className={`${btnBase} ${btnVariants[variant]} ${radius} px-5 py-2.5 min-h-[44px] ${className}`}
-      {...props}
+      type={type}
+      className={`${btnBase} ${btnVariants[variant]} ${radius} px-5 py-2.5 ${className}`}
+      {...rest}
     >
       {children}
     </button>
@@ -115,7 +132,7 @@ export function BauhausLink({
 }: {
   href: string;
   children: ReactNode;
-  variant?: keyof typeof btnVariants;
+  variant?: BtnVariant;
   className?: string;
 }) {
   return (
@@ -150,5 +167,29 @@ export function BauhausDecor({ className = "" }: { className?: string }) {
         style={{ clipPath: "polygon(50% 0%, 0% 100%, 100% 100%)" }}
       />
     </div>
+  );
+}
+
+export function BauhausLabel({
+  children,
+  className = "",
+  accent = "default",
+}: {
+  children: ReactNode;
+  className?: string;
+  accent?: "default" | "blue" | "red" | "white";
+}) {
+  const colors = {
+    default: "text-[#121212]/60",
+    blue: "text-[#1040C0]",
+    red: "text-[#D02020]",
+    white: "text-white/70",
+  };
+  return (
+    <span
+      className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest ${colors[accent]} ${className}`}
+    >
+      {children}
+    </span>
   );
 }

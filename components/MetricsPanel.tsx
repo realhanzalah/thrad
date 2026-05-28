@@ -14,8 +14,8 @@ export function MetricsPanel({
 }) {
   if (!metrics) {
     return (
-      <Card className="p-8">
-        <p className="text-sm text-muted-foreground leading-relaxed">
+      <Card className="p-6" corner="square" cornerColor="#1040C0">
+        <p className="text-sm font-medium text-[#121212]/70 leading-relaxed">
           Metrics appear after the first ad activity.
         </p>
       </Card>
@@ -39,23 +39,22 @@ export function MetricsPanel({
   return (
     <div className="space-y-6">
       {budgetGbp !== undefined && budgetGbp > 0 && (
-        <p className="font-label text-xs text-muted-foreground">
+        <p className="text-xs font-bold uppercase tracking-widest text-[#121212]/50">
           Monthly budget cap:{" "}
-          <span className="text-foreground tabular-nums">{fmtGbp(budgetGbp)}</span>
+          <span className="text-[#121212] tabular-nums">{fmtGbp(budgetGbp)}</span>
           {" · "}spend in metrics uses this session&apos;s activity
         </p>
       )}
 
-      {/* Inverted stats section */}
-      <section className="relative section-inverted texture-lines-inverted py-8 px-6 md:px-8 overflow-hidden">
-        <div className="relative grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-          {primary.map((m) => (
-            <div key={m.label} className="group">
-              <Label className="text-background/60">{m.label}</Label>
-              <div className="mt-2 font-display text-3xl md:text-4xl font-medium tabular-nums tracking-tight">
+      <section className="border-2 lg:border-4 border-[#121212] bg-[#F0C020] shadow-[4px_4px_0px_0px_#121212] lg:shadow-[8px_8px_0px_0px_#121212]">
+        <div className="grid grid-cols-2 lg:grid-cols-4 divide-y-2 lg:divide-y-0 lg:divide-x-2 divide-[#121212]">
+          {primary.map((m, i) => (
+            <div key={m.label} className="p-5 sm:p-6">
+              <Label accent={i % 2 === 0 ? "red" : "blue"}>{m.label}</Label>
+              <div className="mt-2 text-2xl sm:text-3xl lg:text-4xl font-black tabular-nums tracking-tighter text-[#121212]">
                 {m.value}
               </div>
-              <div className="mt-2 text-[11px] text-background/50 leading-relaxed">
+              <div className="mt-2 text-[11px] font-medium text-[#121212]/60 leading-relaxed">
                 {m.hint}
               </div>
             </div>
@@ -63,22 +62,24 @@ export function MetricsPanel({
         </div>
       </section>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {secondary.map((m) => (
-          <Card key={m.label} className="p-5" hover>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {secondary.map((m, i) => (
+          <Card key={m.label} className="p-4" cornerIndex={i}>
             <Label>{m.label}</Label>
-            <div className="mt-2 text-xl font-medium tabular-nums">{m.value}</div>
+            <div className="mt-2 text-xl font-black tabular-nums text-[#121212]">{m.value}</div>
           </Card>
         ))}
       </div>
 
       {learning && (
-        <Card className="p-6 border-2">
-          <Label>Learning agent</Label>
-          <p className="mt-3 text-base leading-relaxed">{learning.summary}</p>
-          <p className="mt-3 text-lg font-display italic">{learning.recommendation}</p>
+        <Card className="p-5 border-[#1040C0]" corner="circle" cornerColor="#1040C0">
+          <Label accent="blue">Learning agent</Label>
+          <p className="mt-2 text-sm font-medium leading-relaxed text-[#121212] pr-4">
+            {learning.summary}
+          </p>
+          <p className="mt-3 text-base font-bold text-[#1040C0]">{learning.recommendation}</p>
           {learning.applied && learning.suggestedAutonomy && (
-            <p className="mt-4 font-label text-xs text-muted-foreground">
+            <p className="mt-3 text-xs font-bold uppercase tracking-widest text-[#121212]/50">
               Auto-adjusted strictness → {learning.suggestedAutonomy}
             </p>
           )}

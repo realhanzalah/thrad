@@ -1,86 +1,95 @@
 import { type ReactNode } from "react";
+import {
+  BauhausBtn,
+  BauhausCard,
+  BauhausInput,
+  BauhausLabel,
+  type BtnVariant,
+  type CornerShape,
+} from "./bauhaus-ui";
+
+export { BauhausLogo, BauhausDecor, BauhausLink, IconArrowRight, IconArrowLeft, IconCheck } from "./bauhaus-ui";
+export { shadowSm, shadowMd, shadowLg } from "./bauhaus-ui";
+
+const CORNER_COLORS = ["#D02020", "#1040C0", "#F0C020"] as const;
+const CORNERS: CornerShape[] = ["circle", "square", "triangle"];
 
 export function Card({
   children,
   className = "",
-  inverted = false,
-  hover = false,
+  corner,
+  cornerColor,
+  cornerIndex = 0,
 }: {
   children: ReactNode;
   className?: string;
-  inverted?: boolean;
-  hover?: boolean;
+  corner?: CornerShape;
+  cornerColor?: string;
+  cornerIndex?: number;
 }) {
   return (
-    <div
-      className={`rounded-none border border-foreground transition-colors duration-100 ${
-        inverted
-          ? "bg-foreground text-background border-foreground"
-          : "bg-card text-card-foreground"
-      } ${hover ? "hover:bg-foreground hover:text-background" : ""} ${className}`}
+    <BauhausCard
+      className={className}
+      corner={corner ?? CORNERS[cornerIndex % 3]}
+      cornerColor={cornerColor ?? CORNER_COLORS[cornerIndex % 3]}
     >
       {children}
-    </div>
+    </BauhausCard>
   );
 }
+
+const variantMap: Record<"default" | "primary" | "ghost" | "danger", BtnVariant> = {
+  primary: "red",
+  default: "outline",
+  ghost: "ghost",
+  danger: "red",
+};
 
 export function Btn({
   children,
   variant = "default",
+  shape = "square",
   className = "",
   ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "default" | "primary" | "ghost" | "danger";
+  shape?: "square" | "pill";
 }) {
-  const base =
-    "inline-flex items-center justify-center rounded-none text-sm font-medium uppercase tracking-widest font-label transition-colors duration-100 focus-ring disabled:opacity-40 disabled:pointer-events-none min-h-[44px]";
-  const variants = {
-    default:
-      "border-2 border-foreground bg-transparent text-foreground px-8 py-4 hover:bg-foreground hover:text-background",
-    primary:
-      "border-2 border-foreground bg-foreground text-background px-8 py-4 hover:bg-background hover:text-foreground",
-    ghost:
-      "border-0 bg-transparent text-foreground px-4 py-2 normal-case tracking-normal font-body hover:underline underline-offset-4",
-    danger:
-      "border-2 border-foreground bg-foreground text-background px-8 py-4 hover:bg-background hover:text-foreground",
-  };
-  const { type = "button", ...rest } = props;
   return (
-    <button type={type} className={`${base} ${variants[variant]} ${className}`} {...rest}>
-      {children}
-    </button>
-  );
-}
-
-export function Input({
-  className = "",
-  ...props
-}: React.InputHTMLAttributes<HTMLInputElement>) {
-  return (
-    <input
-      className={`w-full rounded-none border-0 border-b-2 border-foreground bg-background px-0 py-2.5 text-base text-foreground placeholder:text-muted-foreground placeholder:italic focus:outline-none focus:border-b-[4px] focus-visible:border-b-[4px] ${className}`}
+    <BauhausBtn
+      variant={variantMap[variant]}
+      shape={shape}
+      className={className}
       {...props}
-    />
+    >
+      {children}
+    </BauhausBtn>
   );
 }
 
-export function SectionRule({ className = "" }: { className?: string }) {
-  return <hr className={`border-0 border-t-4 border-foreground my-0 ${className}`} />;
+export function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
+  return <BauhausInput {...props} />;
 }
 
 export function Label({
   children,
   className = "",
+  accent = "default",
 }: {
   children: ReactNode;
   className?: string;
+  accent?: "default" | "blue" | "red" | "white";
 }) {
   return (
-    <span
-      className={`font-label text-xs uppercase tracking-widest text-muted-foreground ${className}`}
-    >
+    <BauhausLabel className={className} accent={accent}>
       {children}
-    </span>
+    </BauhausLabel>
+  );
+}
+
+export function SectionRule({ className = "" }: { className?: string }) {
+  return (
+    <hr className={`border-0 border-b-2 lg:border-b-4 border-[#121212] my-0 ${className}`} />
   );
 }
 

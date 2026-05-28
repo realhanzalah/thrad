@@ -1,135 +1,40 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #000000;
-  --muted: #f5f5f5;
-  --muted-foreground: #525252;
-  --accent: #000000;
-  --accent-foreground: #ffffff;
-  --border: #000000;
-  --border-light: #e5e5e5;
-  --card: #ffffff;
-  --card-foreground: #000000;
-  --ring: #000000;
+  --background: #f0f0f0;
+  --foreground: #121212;
+  --primary-red: #d02020;
+  --primary-blue: #1040c0;
+  --primary-yellow: #f0c020;
+  --muted: #e0e0e0;
+  --border: #121212;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary-red: var(--primary-red);
+  --color-primary-blue: var(--primary-blue);
+  --color-primary-yellow: var(--primary-yellow);
   --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
   --color-border: var(--border);
-  --color-border-light: var(--border-light);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-ring: var(--ring);
-  --font-display: var(--font-playfair);
-  --font-serif: var(--font-source-serif);
-  --font-mono: var(--font-jetbrains-mono);
-  --radius-none: 0px;
+  --font-sans: var(--font-outfit);
 }
 
 html,
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-source-serif), Georgia, serif;
+  font-family: var(--font-outfit), system-ui, sans-serif;
 }
 
 ::selection {
-  background: #000000;
+  background: #1040c0;
   color: #ffffff;
 }
 
-/* Global paper texture */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  opacity: 0.02;
-}
-
-/* Horizontal line texture */
-.texture-lines {
-  background-image: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 1px,
-    #000 1px,
-    #000 2px
-  );
-  background-size: 100% 4px;
-  opacity: 0.015;
-}
-
-/* Grid texture for editorial sections */
-.texture-grid {
-  background-image:
-    linear-gradient(#00000008 1px, transparent 1px),
-    linear-gradient(90deg, #00000008 1px, transparent 1px);
-  background-size: 40px 40px;
-}
-
-/* Inverted section (stats, emphasis) */
-.section-inverted {
-  background: var(--foreground);
-  color: var(--background);
-}
-
-.section-inverted.texture-lines-inverted {
-  position: relative;
-}
-
-.section-inverted.texture-lines-inverted::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image: repeating-linear-gradient(
-    90deg,
-    transparent,
-    transparent 1px,
-    #fff 1px,
-    #fff 2px
-  );
-  background-size: 4px 100%;
-  opacity: 0.03;
-}
-
-/* Typography utilities */
-.font-display {
-  font-family: var(--font-playfair), Georgia, serif;
-}
-
-.font-body {
-  font-family: var(--font-source-serif), Georgia, serif;
-}
-
-.font-label {
-  font-family: var(--font-jetbrains-mono), monospace;
-}
-
-/* Section rule */
-.rule-thick {
-  border-top: 4px solid var(--foreground);
-}
-
-.rule-ultra {
-  border-top: 8px solid var(--foreground);
-}
-
-/* Focus — accessibility */
-.focus-ring {
-  outline: none;
-}
-
-.focus-ring:focus-visible {
-  outline: 3px solid var(--foreground);
-  outline-offset: 3px;
+.dot-grid {
+  background-image: radial-gradient(#121212 1.5px, transparent 1.5px);
+  background-size: 20px 20px;
+  background-position: 0 0;
 }

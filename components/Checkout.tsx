@@ -11,7 +11,7 @@ import {
   BauhausLogo,
   IconArrowLeft,
   IconCheck,
-} from "@/components/demo/bauhaus-ui";
+} from "@/components/bauhaus-ui";
 import type { Conversion, Placement } from "@/lib/types";
 import { thradConversion, thradEvent } from "@/lib/thrad";
 import { fmtGbp } from "./ui";
@@ -172,7 +172,7 @@ export default function Checkout() {
         </div>
         <footer className="border-t-4 border-[#121212] bg-[#121212] py-4 text-center">
           <p className="text-xs font-bold uppercase tracking-widest text-white/70">
-            Yield · Demo checkout
+            Herald · Demo checkout
           </p>
         </footer>
       </div>

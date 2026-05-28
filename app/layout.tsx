@@ -1,26 +1,16 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono, Playfair_Display, Source_Serif_4 } from "next/font/google";
+import { Outfit } from "next/font/google";
 import "./globals.css";
 import { ThradTag } from "@/components/ThradTag";
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
-  style: ["normal", "italic"],
-});
-
-const sourceSerif = Source_Serif_4({
-  variable: "--font-source-serif",
-  subsets: ["latin"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
+  weight: ["400", "500", "700", "900"],
 });
 
 export const metadata: Metadata = {
-  title: "Yield",
+  title: "Herald",
   description: "Ad agent for AI publishers.",
 };
 
@@ -30,14 +20,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${playfair.variable} ${sourceSerif.variable} ${jetbrainsMono.variable} h-full`}
-    >
-      <body className="relative min-h-full flex flex-col bg-background text-foreground font-body antialiased">
+    <html lang="en" className={`${outfit.variable} h-full`}>
+      <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-foreground focus:text-background focus:px-6 focus:py-3 focus:font-label focus:text-xs focus:uppercase focus:tracking-widest focus-ring"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-[#1040C0] focus:text-white focus:px-6 focus:py-3 focus:text-xs focus:font-bold focus:uppercase focus:tracking-widest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#121212]"
         >
           Skip to content
         </a>

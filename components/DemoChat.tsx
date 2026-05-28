@@ -8,7 +8,7 @@ import {
   BauhausInput,
   BauhausLogo,
   IconArrowRight,
-} from "@/components/demo/bauhaus-ui";
+} from "@/components/bauhaus-ui";
 import type { ChatResponse } from "@/lib/types";
 import { thradEvent } from "@/lib/thrad";
 
@@ -97,7 +97,7 @@ export default function DemoChat() {
           <BauhausLogo />
           <div>
             <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#1040C0]">
-              Yield Demo
+              Herald Demo
             </p>
             <h1 className="text-xl sm:text-2xl font-black uppercase tracking-tighter leading-[0.95] text-[#121212]">
               Cooking Assistant
