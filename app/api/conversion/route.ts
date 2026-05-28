@@ -4,7 +4,7 @@ import {
   addRailItem,
   findRailItemByClickId,
   getSessionId,
-  placementByClickId,
+  recordClick,
   recordConversion,
   updateRailItem,
   uuid,
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
   if (!clickId) {
     return NextResponse.json({ error: "clickId required" }, { status: 400 });
   }
-  const placement = placementByClickId(clickId);
+  const placement = recordClick(clickId);
   if (!placement) {
     return NextResponse.json({ error: "unknown clickId" }, { status: 404 });
   }

@@ -82,6 +82,10 @@ export function findRailItemByClickId(clickId: string): RailItem | undefined {
   return getStore().rail.find((r) => r.placement?.clickId === clickId);
 }
 
+export function findRailItemById(id: string): RailItem | undefined {
+  return getStore().rail.find((r) => r.id === id);
+}
+
 export function recordPlacement(p: Placement): void {
   const s = getStore();
   s.placements.set(p.impressionId, p);
@@ -90,6 +94,24 @@ export function recordPlacement(p: Placement): void {
 
 export function placementByClickId(clickId: string): Placement | undefined {
   return getStore().placementsByClickId.get(clickId);
+}
+
+function syncPlacementOnRail(clickId: string, patch: Partial<Placement>): void {
+  const s = getStore();
+  s.rail = s.rail.map((r) => {
+    if (r.placement?.clickId !== clickId) return r;
+    return { ...r, placement: { ...r.placement, ...patch } };
+  });
+}
+
+export function recordClick(clickId: string): Placement | undefined {
+  const p = placementByClickId(clickId);
+  if (!p) return undefined;
+  if (!p.clickedAt) {
+    p.clickedAt = Date.now();
+    syncPlacementOnRail(clickId, { clickedAt: p.clickedAt });
+  }
+  return p;
 }
 
 export function placementByImpressionId(

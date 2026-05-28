@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { placementByClickId } from "@/lib/store";
+import { placementByClickId, recordClick } from "@/lib/store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -18,9 +18,14 @@ export async function POST(req: Request) {
   if (!clickId) {
     return NextResponse.json({ error: "clickId required" }, { status: 400 });
   }
-  const placement = placementByClickId(clickId);
+  const placement = recordClick(clickId);
   if (!placement) {
     return NextResponse.json({ error: "unknown clickId" }, { status: 404 });
   }
-  return NextResponse.json({ ok: true, clickId, impressionId: placement.impressionId });
+  return NextResponse.json({
+    ok: true,
+    clickId,
+    impressionId: placement.impressionId,
+    clickedAt: placement.clickedAt,
+  });
 }

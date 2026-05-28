@@ -106,6 +106,7 @@ export async function POST(req: Request) {
           : "skip",
     ts: Date.now(),
     turnId,
+    userMessage: message,
     decision,
     placement,
     pendingApproval: decision.decision === "hold",

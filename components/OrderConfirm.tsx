@@ -12,7 +12,6 @@ export default function OrderConfirm() {
   const searchParams = useSearchParams();
   const clickId = searchParams.get("clickId") ?? "";
   const [status, setStatus] = useState<Status>("loading");
-  const [detail, setDetail] = useState<string>("");
   const ran = useRef(false);
 
   useEffect(() => {
@@ -45,80 +44,57 @@ export default function OrderConfirm() {
             value: c.value,
             currency: c.currency,
             click_id: c.clickId,
-            audit_status: c.auditStatus,
           });
           setStatus("done");
-          setDetail(
-            `Your order is confirmed. ${new Intl.NumberFormat("en-GB", {
-              style: "currency",
-              currency: "GBP",
-            }).format(c.value)} was logged and counted.`,
-          );
         } else if (c.auditStatus === "held_for_review") {
           setStatus("held");
-          setDetail(
-            "Your order is noted, but Yield flagged it for review before it counts toward earnings. Check the Yield console.",
-          );
         } else {
           setStatus("done");
-          setDetail("Order recorded.");
         }
       } catch {
         setStatus("error");
-        setDetail("We could not record this order. Try again from the chat.");
       }
     })();
   }, [clickId]);
 
   if (!clickId) {
     return (
-      <div className="flex flex-1 items-center justify-center p-8 text-center">
-        <div>
-          <p className="text-zinc-400">Missing order reference.</p>
-          <Link href="/demo" className="mt-4 inline-block text-emerald-400 underline">
-            Back to chat
-          </Link>
-        </div>
+      <div className="flex flex-1 items-center justify-center p-8">
+        <Link href="/demo" className="text-emerald-400 text-sm underline">
+          Back to chat
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center p-8 text-center max-w-md mx-auto">
+    <div className="flex flex-1 flex-col items-center justify-center p-8 text-center max-w-sm mx-auto">
       {status === "loading" && (
-        <>
-          <div className="text-2xl font-semibold text-zinc-100">Processing…</div>
-          <p className="mt-2 text-sm text-zinc-500">
-            Confirming your purchase — same flow a real shop would use.
-          </p>
-        </>
+        <p className="text-zinc-400 text-sm">Confirming order…</p>
       )}
       {status === "done" && (
         <>
-          <div className="text-2xl font-semibold text-emerald-300">Thank you!</div>
-          <p className="mt-2 text-sm text-zinc-400 leading-relaxed">{detail}</p>
+          <h1 className="text-xl font-semibold text-zinc-100">Order confirmed</h1>
+          <p className="mt-2 text-sm text-zinc-500">Thank you for your purchase.</p>
         </>
       )}
       {status === "held" && (
         <>
-          <div className="text-2xl font-semibold text-amber-300">Order received</div>
-          <p className="mt-2 text-sm text-zinc-400 leading-relaxed">{detail}</p>
+          <h1 className="text-xl font-semibold text-amber-200">Order received</h1>
+          <p className="mt-2 text-sm text-zinc-500">
+            Pending review in the Yield console.
+          </p>
         </>
       )}
       {status === "error" && (
-        <>
-          <div className="text-2xl font-semibold text-zinc-300">Something went wrong</div>
-          <p className="mt-2 text-sm text-zinc-500">{detail}</p>
-        </>
+        <p className="text-sm text-zinc-500">Could not confirm order.</p>
       )}
-      <div className="mt-8 flex flex-col gap-2 text-sm">
-        <Link href="/demo" className="text-emerald-400 hover:text-emerald-300 underline">
-          Back to cooking assistant
-        </Link>
-        <Link href="/" className="text-zinc-500 hover:text-zinc-400 underline">
-          Open Yield console
-        </Link>
-      </div>
+      <Link
+        href="/demo"
+        className="mt-8 text-sm text-emerald-400 hover:text-emerald-300 underline"
+      >
+        Back to chat
+      </Link>
     </div>
   );
 }

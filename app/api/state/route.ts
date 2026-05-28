@@ -1,14 +1,23 @@
 import { NextResponse } from "next/server";
-import { getAutonomy, getEarnings, getRail, getSessionId, setAutonomy } from "@/lib/store";
+import {
+  getAutonomy,
+  getEarnings,
+  getRail,
+  getSessionId,
+  setAutonomy,
+  thresholdFor,
+} from "@/lib/store";
 import type { AutonomyLevel } from "@/lib/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const autonomy = getAutonomy();
   return NextResponse.json({
     sessionId: getSessionId(),
-    autonomy: getAutonomy(),
+    autonomy,
+    intentThreshold: thresholdFor(autonomy),
     earnings: getEarnings(),
     rail: getRail(),
   });

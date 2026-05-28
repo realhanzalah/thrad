@@ -14,9 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Yield — Ad agent for AI apps",
-  description:
-    "Yield watches your AI app's chats, shows ads at the right moments, and checks sales before they count.",
+  title: "Yield",
+  description: "Ad agent for AI publishers.",
 };
 
 export default function RootLayout({

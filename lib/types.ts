@@ -37,6 +37,7 @@ export type Placement = {
   intentScore: number;
   reason: string;
   ts: number;
+  clickedAt?: number;
 };
 
 export type ConversionSignals = {
@@ -80,10 +81,10 @@ export type RailItem = {
   kind: RailItemKind;
   ts: number;
   turnId?: string;
+  userMessage?: string;
   decision?: AgentDecision;
   placement?: Placement;
   conversion?: Conversion;
-  // for "hold" decisions awaiting human approve/skip
   pendingApproval?: boolean;
 };
 
