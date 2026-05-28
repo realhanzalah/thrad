@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { Conversion, Placement, RailItem } from "@/lib/types";
 import { useYieldState } from "@/hooks/useYieldState";
 import { MetricsPanel } from "./MetricsPanel";
-import { Btn, Card, fmtGbp } from "./ui";
+import { Btn, Card, fmtGbp, Label, SectionRule } from "./ui";
 
 const STRICTNESS = [
   { level: "conservative" as const, label: "High bar", hint: "80+" },
@@ -49,31 +49,36 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col flex-1 min-h-screen">
-      <header className="px-6 py-5 border-b-2 border-zinc-700">
-        <h1 className="text-xl font-semibold tracking-tight text-zinc-100">Dashboard</h1>
-        <div className="mt-3 flex gap-8">
-          <div>
-            <div className="text-xs text-zinc-500">Revenue</div>
-            <div
-              className={`text-2xl font-semibold tabular-nums ${
-                pulse ? "text-emerald-300" : "text-zinc-100"
-              }`}
-            >
-              {fmtGbp(earnings.totalGbp)}
-            </div>
-          </div>
-          {earnings.pendingGbp > 0 && (
+      <header className="px-6 md:px-8 lg:px-12 py-8 md:py-10 border-b-4 border-foreground relative">
+        <div className="absolute inset-0 texture-lines pointer-events-none" aria-hidden />
+        <div className="relative">
+          <h1 className="font-display text-4xl md:text-5xl font-medium tracking-tight">
+            Dashboard
+          </h1>
+          <div className="mt-8 flex flex-wrap gap-12">
             <div>
-              <div className="text-xs text-amber-400/90">Pending approval</div>
-              <div className="text-xl tabular-nums text-amber-300">
-                {fmtGbp(earnings.pendingGbp)}
+              <Label>Revenue</Label>
+              <div
+                className={`mt-2 font-display text-4xl md:text-5xl tabular-nums tracking-tight transition-colors duration-100 ${
+                  pulse ? "italic" : ""
+                }`}
+              >
+                {fmtGbp(earnings.totalGbp)}
               </div>
             </div>
-          )}
+            {earnings.pendingGbp > 0 && (
+              <div>
+                <Label>Pending approval</Label>
+                <div className="mt-2 font-display text-3xl tabular-nums tracking-tight">
+                  {fmtGbp(earnings.pendingGbp)}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
-      <div className="flex-1 overflow-y-auto px-6 py-6 space-y-8 max-w-5xl">
+      <div className="flex-1 overflow-y-auto px-6 md:px-8 lg:px-12 py-10 md:py-12 space-y-12 max-w-6xl">
         <MetricsPanel
           metrics={metrics}
           learning={learning}
@@ -82,31 +87,32 @@ export default function Dashboard() {
 
         {(pendingMonetize.length > 0 || uniquePendingSales.length > 0) && (
           <section>
-            <h2 className="text-sm font-semibold text-zinc-200 mb-3">
+            <SectionRule className="mb-8" />
+            <h2 className="font-display text-2xl font-medium tracking-tight mb-6">
               Needs your decision
             </h2>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {pendingMonetize.map((item) => (
-                <Card key={item.id} className="p-4 border-sky-800/50 bg-sky-950/20">
-                  <p className="text-sm font-medium text-zinc-100">
+                <Card key={item.id} className="p-6 border-2">
+                  <p className="text-base font-medium leading-relaxed">
                     Is buying intent strong enough to show an ad?
                   </p>
-                  <p className="mt-2 text-sm text-zinc-400 line-clamp-2">
+                  <p className="mt-3 text-sm text-muted-foreground line-clamp-2 italic">
                     &ldquo;{item.userMessage}&rdquo;
                   </p>
-                  <p className="mt-2 text-xs text-zinc-500">
+                  <p className="mt-3 font-label text-xs text-muted-foreground">
                     Score {item.decision?.intent_score ?? "—"} · your bar is {threshold}+
                   </p>
-                  <div className="mt-3 flex gap-2">
+                  <div className="mt-5 flex gap-3">
                     <Btn
                       variant="primary"
-                      className="flex-1 py-2"
+                      className="flex-1 py-3"
                       onClick={() => monetizeDecision(item.id, "approve")}
                     >
-                      Show ad
+                      Show ad →
                     </Btn>
                     <Btn
-                      className="flex-1 py-2"
+                      className="flex-1 py-3"
                       onClick={() => monetizeDecision(item.id, "decline")}
                     >
                       No ad
@@ -118,32 +124,33 @@ export default function Dashboard() {
               {uniquePendingSales.map((item) => {
                 const c = item.conversion!;
                 return (
-                  <Card key={c.conversionId} className="p-4 border-amber-800/50 bg-amber-950/15">
-                    <p className="text-sm font-medium text-zinc-100">
+                  <Card key={c.conversionId} className="p-6 border-2" inverted>
+                    <p className="text-base font-medium leading-relaxed">
                       Does this conversion need a human audit?
                     </p>
-                    <p className="mt-1 text-lg tabular-nums text-amber-200">
+                    <p className="mt-2 font-display text-3xl tabular-nums">
                       {fmtGbp(c.value)}
                     </p>
-                    <ul className="mt-2 text-xs text-zinc-400 space-y-1">
+                    <ul className="mt-3 font-label text-xs space-y-1 opacity-80">
                       {c.heldReasons.map((reason, i) => (
-                        <li key={i}>· {reason}</li>
+                        <li key={i}>— {reason}</li>
                       ))}
                     </ul>
-                    <div className="mt-3 flex gap-2">
-                      <Btn
-                        variant="danger"
-                        className="flex-1 py-2"
+                    <div className="mt-5 flex gap-3">
+                      <button
+                        type="button"
+                        className="flex-1 py-3 border-2 border-background bg-background text-foreground font-label text-sm uppercase tracking-widest transition-colors duration-100 hover:bg-transparent hover:text-background focus-ring min-h-[44px]"
                         onClick={() => saleDecision(c.conversionId, "confirm")}
                       >
-                        Approve sale
-                      </Btn>
-                      <Btn
-                        className="flex-1 py-2"
+                        Approve sale →
+                      </button>
+                      <button
+                        type="button"
+                        className="flex-1 py-3 border-2 border-background bg-transparent text-background font-label text-sm uppercase tracking-widest transition-colors duration-100 hover:bg-background hover:text-foreground focus-ring min-h-[44px]"
                         onClick={() => saleDecision(c.conversionId, "reject")}
                       >
                         Reject
-                      </Btn>
+                      </button>
                     </div>
                   </Card>
                 );
@@ -153,37 +160,43 @@ export default function Dashboard() {
         )}
 
         <section>
-          <h2 className="text-sm font-semibold text-zinc-200 mb-2">
+          <SectionRule className="mb-8" />
+          <h2 className="font-display text-2xl font-medium tracking-tight">
             Ad strictness
           </h2>
-          <p className="text-xs text-zinc-500 mb-3">
+          <p className="mt-2 text-sm text-muted-foreground leading-relaxed max-w-lg">
             Controls when Yield shows ads vs asks you first.
           </p>
-          <div className="flex gap-2 max-w-lg">
+          <div className="mt-5 flex gap-2 max-w-lg">
             {STRICTNESS.map((s) => (
               <button
                 key={s.level}
                 type="button"
                 onClick={() => setStrictness(s.level)}
-                className={`flex-1 py-2.5 rounded-none border-2 text-sm font-semibold uppercase tracking-wide transition duration-200 ease-out shadow-[4px_4px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none ${
+                className={`flex-1 py-3 px-2 rounded-none border-2 text-sm font-label uppercase tracking-widest transition-colors duration-100 focus-ring ${
                   autonomy === s.level
-                    ? "border-emerald-700 bg-emerald-950/50 text-emerald-200"
-                    : "border-zinc-600 bg-zinc-900 text-zinc-400 hover:border-zinc-500"
+                    ? "border-foreground bg-foreground text-background"
+                    : "border-foreground bg-background text-muted-foreground hover:bg-foreground hover:text-background"
                 }`}
               >
-                <div className="font-medium">{s.label}</div>
-                <div className="text-[11px] opacity-70">{s.hint}</div>
+                <div className="font-medium normal-case tracking-normal font-body text-sm">
+                  {s.label}
+                </div>
+                <div className="text-[10px] mt-1 opacity-70">{s.hint}</div>
               </button>
             ))}
           </div>
         </section>
 
         <section>
-          <h2 className="text-sm font-semibold text-zinc-200 mb-3">Activity</h2>
+          <SectionRule className="mb-8" />
+          <h2 className="font-display text-2xl font-medium tracking-tight mb-5">
+            Activity
+          </h2>
           {activity.length === 0 ? (
-            <p className="text-sm text-zinc-500">No activity yet.</p>
+            <p className="text-sm text-muted-foreground">No activity yet.</p>
           ) : (
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {activity.slice(0, 10).map((item) => (
                 <ActivityRow key={item.id} item={item} />
               ))}
@@ -191,15 +204,16 @@ export default function Dashboard() {
           )}
         </section>
 
-        <section className="pt-4 border-t-2 border-zinc-800/60">
-          <p className="text-[11px] text-zinc-600 mb-2">Demo</p>
+        <section className="pt-4">
+          <SectionRule className="mb-6" />
+          <Label>Demo</Label>
           <Btn
             variant="ghost"
-            className="text-xs px-3 py-1.5 border border-zinc-800"
+            className="mt-2 text-xs px-0"
             onClick={simulateFlaggedSale}
             disabled={!hasPlacement}
           >
-            Simulate flagged sale
+            Simulate flagged sale →
           </Btn>
         </section>
       </div>
@@ -213,20 +227,20 @@ function ActivityRow({ item }: { item: RailItem }) {
 
   return (
     <li>
-      <Card className="overflow-hidden hover:-translate-y-0.5 transition-transform">
+      <Card className="overflow-hidden p-0 group">
         <button
           type="button"
           onClick={() => item.placement && setOpen((o) => !o)}
-          className="w-full text-left px-3 py-2.5 flex items-center gap-3"
+          className="w-full text-left px-4 py-3 flex items-center gap-4 transition-colors duration-100 hover:bg-foreground hover:text-background focus-ring"
         >
-          <StatusDot kind={item.kind} conversion={item.conversion} />
-          <span className="text-sm text-zinc-300 flex-1 truncate">{summary}</span>
+          <StatusMark kind={item.kind} conversion={item.conversion} />
+          <span className="text-sm flex-1 truncate">{summary}</span>
           {item.placement && (
-            <span className="text-[11px] text-zinc-600">{open ? "−" : "+"}</span>
+            <span className="font-label text-[10px] opacity-60">{open ? "−" : "+"}</span>
           )}
         </button>
         {open && item.placement && (
-          <div className="px-3 pb-3 border-t-2 border-zinc-800">
+          <div className="px-4 pb-4 border-t border-foreground">
             <Funnel placement={item.placement} conversion={item.conversion} />
           </div>
         )}
@@ -249,19 +263,31 @@ function activitySummary(item: RailItem): string {
   return "Update";
 }
 
-function StatusDot({
+function StatusMark({
   kind,
   conversion,
 }: {
   kind: RailItem["kind"];
   conversion?: Conversion;
 }) {
-  let color = "bg-zinc-500";
-  if (conversion?.auditStatus === "held_for_review" || kind === "audit")
-    color = "bg-amber-400";
-  else if (kind === "place" || kind === "conversion") color = "bg-emerald-400";
-  else if (kind === "hold") color = "bg-sky-400";
-  return <span className={`w-2 h-2 rounded-full shrink-0 ${color}`} />;
+  const held = conversion?.auditStatus === "held_for_review" || kind === "audit";
+  const active = kind === "place" || kind === "conversion";
+  const pending = kind === "hold";
+
+  if (held) {
+    return (
+      <span className="w-3 h-3 shrink-0 border-2 border-foreground bg-transparent" />
+    );
+  }
+  if (active) {
+    return <span className="w-3 h-3 shrink-0 bg-foreground" />;
+  }
+  if (pending) {
+    return (
+      <span className="w-3 h-3 shrink-0 border border-foreground bg-muted" />
+    );
+  }
+  return <span className="w-3 h-3 shrink-0 border border-border-light bg-transparent" />;
 }
 
 function Funnel({
@@ -278,17 +304,21 @@ function Funnel({
     { label: "Purchased", done: !!conversion },
   ];
   return (
-    <ol className="mt-2 space-y-1.5">
+    <ol className="mt-3 space-y-2">
       {steps.map((s) => (
-        <li key={s.label} className="flex items-center gap-2 text-xs">
+        <li key={s.label} className="flex items-center gap-3 text-xs">
           <span
-            className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${
-              s.done ? "bg-emerald-500/20 text-emerald-400" : "bg-zinc-800 text-zinc-600"
+            className={`w-4 h-4 flex items-center justify-center text-[10px] border ${
+              s.done
+                ? "border-foreground bg-foreground text-background"
+                : "border-border-light text-muted-foreground"
             }`}
           >
             {s.done ? "✓" : "·"}
           </span>
-          <span className={s.done ? "text-zinc-300" : "text-zinc-600"}>{s.label}</span>
+          <span className={s.done ? "text-foreground" : "text-muted-foreground"}>
+            {s.label}
+          </span>
         </li>
       ))}
     </ol>

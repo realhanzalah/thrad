@@ -24,7 +24,7 @@ const AGENTS: { id: AgentId; title: string; subtitle: string }[] = [
 
 export function AgentTerminals({ traces }: { traces: AgentTrace[] }) {
   return (
-    <div className="grid lg:grid-cols-3 gap-4">
+    <div className="grid lg:grid-cols-3 gap-6">
       {AGENTS.map((agent) => (
         <TerminalWindow
           key={agent.id}
@@ -51,36 +51,36 @@ function TerminalWindow({
   }, [traces]);
 
   return (
-    <Card className="flex flex-col overflow-hidden min-h-[320px]">
-      <div className="px-3 py-2 border-b-2 border-zinc-700 bg-zinc-950 flex items-center gap-2">
-        <span className="flex gap-1">
-          <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-          <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
+    <Card className="flex flex-col overflow-hidden min-h-[320px] p-0 border-2">
+      <div className="px-4 py-3 border-b border-foreground flex items-center gap-3">
+        <span className="flex gap-1.5">
+          <span className="w-2.5 h-2.5 border border-foreground bg-foreground" />
+          <span className="w-2.5 h-2.5 border border-foreground bg-background" />
+          <span className="w-2.5 h-2.5 border border-foreground bg-muted" />
         </span>
         <div className="min-w-0 flex-1">
-          <div className="text-xs font-semibold text-zinc-200 truncate">
-            {agent.title}
+          <div className="text-sm font-medium truncate">{agent.title}</div>
+          <div className="font-label text-[10px] text-muted-foreground truncate mt-0.5">
+            {agent.subtitle}
           </div>
-          <div className="text-[10px] text-zinc-500 truncate">{agent.subtitle}</div>
         </div>
         {latest?.status === "running" && (
-          <span className="text-[10px] text-emerald-400 animate-pulse">live</span>
+          <span className="font-label text-[10px] uppercase tracking-widest">live</span>
         )}
       </div>
       <div
         ref={scrollRef}
-        className="flex-1 p-3 font-mono text-[11px] leading-relaxed text-emerald-400/90 bg-black/40 overflow-y-auto max-h-[400px]"
+        className="flex-1 p-4 font-label text-[11px] leading-relaxed text-foreground bg-muted overflow-y-auto max-h-[400px]"
       >
         {traces.length === 0 ? (
-          <p className="text-zinc-600">Waiting for activity…</p>
+          <p className="text-muted-foreground">Waiting for activity…</p>
         ) : (
           traces
             .slice()
             .reverse()
             .map((t) => (
-              <div key={t.id} className="mb-4 last:mb-0">
-                <div className="text-zinc-600 mb-1">
+              <div key={t.id} className="mb-5 last:mb-0 border-b border-border-light pb-4 last:border-0">
+                <div className="text-muted-foreground mb-2 uppercase tracking-widest text-[10px]">
                   {new Date(t.ts).toLocaleTimeString()}
                   {t.status === "error" ? " · error" : ""}
                 </div>

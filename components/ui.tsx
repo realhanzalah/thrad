@@ -1,20 +1,23 @@
 import { type ReactNode } from "react";
 
-/** Hard shadows + borders per design system, Yield dark palette */
-export const shadowSm = "shadow-[3px_3px_0px_0px_#000000]";
-export const shadowMd = "shadow-[4px_4px_0px_0px_#000000]";
-export const shadowLg = "shadow-[8px_8px_0px_0px_#000000]";
-
 export function Card({
   children,
   className = "",
+  inverted = false,
+  hover = false,
 }: {
   children: ReactNode;
   className?: string;
+  inverted?: boolean;
+  hover?: boolean;
 }) {
   return (
     <div
-      className={`rounded-none border-2 border-zinc-600 bg-zinc-900 ${shadowLg} transition duration-200 ease-out hover:-translate-y-1 ${className}`}
+      className={`rounded-none border border-foreground transition-colors duration-100 ${
+        inverted
+          ? "bg-foreground text-background border-foreground"
+          : "bg-card text-card-foreground"
+      } ${hover ? "hover:bg-foreground hover:text-background" : ""} ${className}`}
     >
       {children}
     </div>
@@ -30,16 +33,16 @@ export function Btn({
   variant?: "default" | "primary" | "ghost" | "danger";
 }) {
   const base =
-    "inline-flex items-center justify-center rounded-none border-2 text-sm font-semibold uppercase tracking-wide transition duration-200 ease-out active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-40 disabled:pointer-events-none disabled:active:translate-x-0 disabled:active:translate-y-0";
+    "inline-flex items-center justify-center rounded-none text-sm font-medium uppercase tracking-widest font-label transition-colors duration-100 focus-ring disabled:opacity-40 disabled:pointer-events-none min-h-[44px]";
   const variants = {
     default:
-      `border-zinc-500 bg-zinc-800 text-zinc-100 ${shadowMd} hover:bg-zinc-700`,
+      "border-2 border-foreground bg-transparent text-foreground px-8 py-4 hover:bg-foreground hover:text-background",
     primary:
-      `border-emerald-800 bg-emerald-600 text-white ${shadowMd} hover:bg-emerald-500`,
+      "border-2 border-foreground bg-foreground text-background px-8 py-4 hover:bg-background hover:text-foreground",
     ghost:
-      "border-transparent bg-transparent text-zinc-400 shadow-none normal-case tracking-normal hover:text-zinc-200",
+      "border-0 bg-transparent text-foreground px-4 py-2 normal-case tracking-normal font-body hover:underline underline-offset-4",
     danger:
-      `border-amber-900 bg-amber-950 text-amber-100 ${shadowMd} hover:bg-amber-900`,
+      "border-2 border-foreground bg-foreground text-background px-8 py-4 hover:bg-background hover:text-foreground",
   };
   const { type = "button", ...rest } = props;
   return (
@@ -55,9 +58,29 @@ export function Input({
 }: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
-      className={`w-full rounded-none border-2 border-zinc-600 bg-zinc-950 px-3 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-emerald-700 ${shadowSm} ${className}`}
+      className={`w-full rounded-none border-0 border-b-2 border-foreground bg-background px-0 py-2.5 text-base text-foreground placeholder:text-muted-foreground placeholder:italic focus:outline-none focus:border-b-[4px] focus-visible:border-b-[4px] ${className}`}
       {...props}
     />
+  );
+}
+
+export function SectionRule({ className = "" }: { className?: string }) {
+  return <hr className={`border-0 border-t-4 border-foreground my-0 ${className}`} />;
+}
+
+export function Label({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <span
+      className={`font-label text-xs uppercase tracking-widest text-muted-foreground ${className}`}
+    >
+      {children}
+    </span>
   );
 }
 

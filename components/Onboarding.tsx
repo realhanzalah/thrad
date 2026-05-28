@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { AutonomyLevel } from "@/lib/types";
-import { Btn, Card, Input } from "./ui";
+import { Btn, Card, Input, Label } from "./ui";
 
 const LEVELS: { value: AutonomyLevel; label: string; hint: string }[] = [
   { value: "conservative", label: "Careful", hint: "Fewer ads · intent 80+" },
@@ -49,7 +49,7 @@ export function OnboardingGate({ children }: { children: React.ReactNode }) {
 
   if (!ready) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-zinc-950 text-zinc-500 text-sm">
+      <div className="min-h-screen flex items-center justify-center bg-background text-muted-foreground text-sm font-label uppercase tracking-widest">
         Loading…
       </div>
     );
@@ -59,59 +59,64 @@ export function OnboardingGate({ children }: { children: React.ReactNode }) {
     <>
       {children}
       {show && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <Card className="w-full max-w-md p-6">
-            <h2 className="text-xl font-bold text-zinc-100 tracking-tight">
-              Set up Yield
-            </h2>
-            <p className="mt-2 text-sm text-zinc-400 leading-relaxed">
-              A starting budget and ad strictness. The learning agent will adjust over time
-              as it sees your LTV and CAC.
-            </p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/90 p-4 md:p-8">
+          <Card className="w-full max-w-md p-8 md:p-10 bg-background relative">
+            <div className="absolute inset-0 texture-grid pointer-events-none opacity-50" aria-hidden />
+            <div className="relative">
+              <h2 className="font-display text-3xl font-medium tracking-tight">
+                Set up Yield
+              </h2>
+              <p className="mt-4 text-base text-muted-foreground leading-relaxed">
+                A starting budget and ad strictness. The learning agent will adjust over time
+                as it sees your LTV and CAC.
+              </p>
 
-            <label className="block mt-6 text-xs font-bold uppercase tracking-widest text-zinc-500">
-              Monthly ad budget (£)
-            </label>
-            <Input
-              type="number"
-              min={50}
-              step={50}
-              value={budget}
-              onChange={(e) => setBudget(e.target.value)}
-              className="mt-2"
-            />
+              <label className="block mt-8">
+                <Label>Monthly ad budget (£)</Label>
+                <Input
+                  type="number"
+                  min={50}
+                  step={50}
+                  value={budget}
+                  onChange={(e) => setBudget(e.target.value)}
+                  className="mt-3"
+                />
+              </label>
 
-            <label className="block mt-5 text-xs font-bold uppercase tracking-widest text-zinc-500">
-              Ad strictness
-            </label>
-            <div className="mt-2 grid grid-cols-3 gap-2">
-              {LEVELS.map((l) => (
-                <button
-                  key={l.value}
-                  type="button"
-                  onClick={() => setAutonomy(l.value)}
-                  className={`py-2.5 px-2 rounded-none border-2 text-left transition duration-200 ease-out active:translate-x-[2px] active:translate-y-[2px] active:shadow-none ${
-                    autonomy === l.value
-                      ? "border-emerald-700 bg-emerald-950/60 text-emerald-200 shadow-[4px_4px_0px_0px_#000]"
-                      : "border-zinc-600 bg-zinc-900 text-zinc-400 shadow-[3px_3px_0px_0px_#000] hover:border-zinc-500"
-                  }`}
-                >
-                  <div className="text-xs font-bold uppercase">{l.label}</div>
-                  <div className="text-[10px] mt-0.5 opacity-80 normal-case tracking-normal">
-                    {l.hint}
-                  </div>
-                </button>
-              ))}
+              <div className="mt-8">
+                <Label>Ad strictness</Label>
+                <div className="mt-3 grid grid-cols-3 gap-2">
+                  {LEVELS.map((l) => (
+                    <button
+                      key={l.value}
+                      type="button"
+                      onClick={() => setAutonomy(l.value)}
+                      className={`py-3 px-2 rounded-none border-2 text-left transition-colors duration-100 focus-ring ${
+                        autonomy === l.value
+                          ? "border-foreground bg-foreground text-background"
+                          : "border-foreground bg-background text-muted-foreground hover:bg-foreground hover:text-background"
+                      }`}
+                    >
+                      <div className="text-xs font-label uppercase tracking-widest">
+                        {l.label}
+                      </div>
+                      <div className="text-[10px] mt-1 opacity-80 normal-case tracking-normal font-body">
+                        {l.hint}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <Btn
+                variant="primary"
+                className="w-full mt-8 py-4"
+                disabled={saving}
+                onClick={submit}
+              >
+                {saving ? "Saving…" : "Start →"}
+              </Btn>
             </div>
-
-            <Btn
-              variant="primary"
-              className="w-full mt-6 py-3"
-              disabled={saving}
-              onClick={submit}
-            >
-              {saving ? "Saving…" : "Start"}
-            </Btn>
           </Card>
         </div>
       )}

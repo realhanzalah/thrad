@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import type { Conversion, Placement } from "@/lib/types";
 import { thradConversion, thradEvent } from "@/lib/thrad";
-import { Btn, Card, fmtGbp } from "./ui";
+import { Btn, Card, fmtGbp, Label } from "./ui";
 
 type LoadState =
   | { status: "loading" }
@@ -15,6 +15,22 @@ type LoadState =
       placement: Placement;
       alreadyConverted: boolean;
     };
+
+function CheckoutShell({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="min-h-screen flex flex-col bg-background">
+      <header className="relative px-6 md:px-8 py-8 md:py-10 border-b-4 border-foreground section-inverted texture-lines-inverted">
+        <div className="relative mx-auto max-w-lg w-full">
+          <Label className="text-background/60">Yield demo</Label>
+          <h1 className="font-display text-4xl md:text-5xl font-medium tracking-tight text-background mt-2">
+            Checkout
+          </h1>
+        </div>
+      </header>
+      <div className="flex-1 px-6 md:px-8 py-10 md:py-12 demo-texture-grid">{children}</div>
+    </div>
+  );
+}
 
 export default function Checkout() {
   const searchParams = useSearchParams();
@@ -95,19 +111,26 @@ export default function Checkout() {
 
   if (load.status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center text-zinc-500 text-sm">
-        Loading product…
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <p className="font-label text-xs uppercase tracking-widest text-muted-foreground">
+          Loading product…
+        </p>
       </div>
     );
   }
 
   if (load.status === "error") {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-8">
-        <p className="text-zinc-400">{load.message}</p>
-        <Link href="/demo" className="text-emerald-400 text-sm underline">
-          Back to chat
-        </Link>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-6 p-8 bg-background">
+        <Card className="p-8 max-w-md w-full text-center border-2">
+          <p className="text-base leading-relaxed">{load.message}</p>
+          <Link
+            href="/demo"
+            className="mt-6 inline-block text-sm underline underline-offset-4 hover:no-underline focus-ring"
+          >
+            Back to chat →
+          </Link>
+        </Card>
       </div>
     );
   }
@@ -117,66 +140,101 @@ export default function Checkout() {
 
   if (done || alreadyConverted) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-8">
-        <Card className="p-8 max-w-md w-full text-center">
-          <h1 className="text-xl font-bold text-zinc-100">Order confirmed</h1>
-          <p className="mt-2 text-sm text-zinc-400">Thank you for your purchase.</p>
-          {done && (
-            <p className="mt-4 text-lg tabular-nums text-emerald-300">
-              {fmtGbp(done.value)}
+      <div className="min-h-screen flex flex-col bg-background">
+        <div className="flex-1 flex flex-col items-center justify-center p-8">
+          <Card className="p-10 max-w-md w-full text-center border-2">
+            <span className="mx-auto mb-6 flex h-12 w-12 items-center justify-center border-2 border-foreground bg-foreground text-background text-xl">
+              ✓
+            </span>
+            <h1 className="font-display text-3xl font-medium tracking-tight">
+              Order confirmed
+            </h1>
+            <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
+              Thank you for your purchase.
             </p>
-          )}
-          <Link href="/demo" className="mt-6 inline-block text-sm text-emerald-400 underline">
-            Back to chat
-          </Link>
-        </Card>
+            {done && (
+              <p className="mt-6 font-display text-4xl tabular-nums tracking-tight">
+                {fmtGbp(done.value)}
+              </p>
+            )}
+            <Link
+              href="/demo"
+              className="mt-8 inline-flex w-full items-center justify-center border-2 border-foreground bg-foreground text-background px-8 py-4 font-label text-sm uppercase tracking-widest transition-colors duration-100 hover:bg-background hover:text-foreground focus-ring min-h-[44px]"
+            >
+              Back to chat →
+            </Link>
+          </Card>
+        </div>
+        <footer className="border-t-4 border-foreground bg-foreground py-4 text-center">
+          <p className="font-label text-xs uppercase tracking-widest text-background/70">
+            Yield · Demo checkout
+          </p>
+        </footer>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 px-4 py-10">
-      <div className="max-w-lg mx-auto">
-        <Link href="/demo" className="text-xs text-zinc-500 hover:text-zinc-300">
+    <CheckoutShell>
+      <div className="mx-auto max-w-lg w-full">
+        <Link
+          href="/demo"
+          className="font-label text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground focus-ring"
+        >
           ← Back to chat
         </Link>
-        <h1 className="mt-4 text-2xl font-bold text-zinc-100 tracking-tight">Checkout</h1>
-        <p className="mt-1 text-sm text-zinc-500">
+
+        <p className="mt-6 text-base text-muted-foreground leading-relaxed max-w-prose">
           Real product link from search. Purchase is only recorded when you confirm below.
         </p>
 
-        <Card className="mt-6 p-5">
-          <h2 className="font-semibold text-zinc-100 leading-snug">{offer.title}</h2>
+        <Card className="mt-8 p-6 border-2">
+          <Label>Product</Label>
+          <h2 className="mt-2 font-display text-xl font-medium leading-snug pr-4">
+            {offer.title}
+          </h2>
           {offer.price && (
-            <p className="mt-2 text-lg tabular-nums text-emerald-300">{offer.price}</p>
+            <p className="mt-4 text-2xl font-medium tabular-nums">{offer.price}</p>
           )}
           {offer.merchant && (
-            <p className="mt-1 text-xs text-zinc-500">{offer.merchant}</p>
+            <p className="mt-3 font-label text-xs uppercase tracking-widest text-muted-foreground">
+              {offer.merchant}
+            </p>
           )}
           {offer.snippet && (
-            <p className="mt-3 text-sm text-zinc-400 leading-relaxed">{offer.snippet}</p>
+            <p className="mt-4 text-sm text-muted-foreground leading-relaxed border-l-4 border-foreground pl-4">
+              {offer.snippet}
+            </p>
           )}
-          <p className="mt-3 text-[11px] text-zinc-600 break-all font-mono">{offer.url}</p>
+          <p className="mt-4 font-label text-[10px] text-muted-foreground break-all border-t border-border-light pt-4">
+            {offer.url}
+          </p>
         </Card>
 
-        <div className="mt-6 space-y-3">
-          <Btn variant="primary" className="w-full py-3" onClick={visitStore}>
-            {visitedStore ? "Visit store again" : "1 · Visit store"}
-          </Btn>
-          <Btn
-            className="w-full py-3"
-            onClick={confirmPurchase}
-            disabled={!visitedStore || confirming}
-          >
-            {confirming ? "Recording…" : "2 · Confirm purchase"}
-          </Btn>
-        </div>
+        <ol className="mt-8 space-y-3">
+          <li>
+            <Btn variant="primary" className="w-full py-4" onClick={visitStore}>
+              {visitedStore ? "1 · Visit store again →" : "1 · Visit store →"}
+            </Btn>
+          </li>
+          <li>
+            <Btn
+              className="w-full py-4"
+              onClick={confirmPurchase}
+              disabled={!visitedStore || confirming}
+            >
+              {confirming ? "Recording…" : "2 · Confirm purchase"}
+            </Btn>
+          </li>
+        </ol>
 
-        <p className="mt-4 text-xs text-zinc-600 leading-relaxed">
-          Step 1 opens the merchant (logs a click). Step 2 records the sale — same as a
-          postback on the store&apos;s thank-you page. In production this can come from Thrad.
-        </p>
+        <div className="mt-8 border border-foreground bg-muted p-5">
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            Step 1 opens the merchant (logs a click). Step 2 records the sale — same as a
+            postback on the store&apos;s thank-you page. In production this can come from Thrad.
+          </p>
+        </div>
       </div>
-    </div>
+    </CheckoutShell>
   );
 }
